@@ -7,28 +7,49 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
                              QVBoxLayout, QWidget)
-from PyQt5.QtGui import QPainter, QColor, QBrush
-from PyQt5.QtCore import Qt
 from picamera2 import Picamera2
 from picamera2.previews.qt import QGlPicamera2
 from button_styles import CircularButton
+import numpy as np
+import time
+import configparser
+import os
 
+config_file_path = os.path.expanduser("~/.camera_config")
 
-# def post_callback(request):
-#     label.setText(''.join(f"{k}: {v}\n" for k, v in request.get_metadata().items()))
+config = configparser.ConfigParser()
 
+try:
+    config.read(config_file_path)
+    total_captures = config.getint("General", "total_captures")
+except (configparser.NoSectionError, configparser.NoOptionError):
+    total_captures = 0
 
+# print(f'total_captures = {total_captures}')
 picam2 = Picamera2()
 # picam2.post_callback = post_callback
 picam2.configure(picam2.create_preview_configuration(main={"size": (800, 600)}))
-
+# print(f'dir(picam2) = {dir(picam2)}')
 app = QApplication([])
 
 
 def on_button_clicked():
+    global total_captures
     circular_button.setEnabled(False)
+
+    overlay = np.zeros((800, 600, 4), dtype=np.uint8)
+    overlay[:, :] = (0, 0, 0, 255)
+    qpicamera2.set_overlay(overlay)
     cfg = picam2.create_still_configuration()
-    picam2.switch_mode_and_capture_file(cfg, "test.jpg", signal_function=qpicamera2.signal_done)
+    total_captures += 1
+    picam2.switch_mode_and_capture_file(cfg, f"DSC_{total_captures:04d}.jpg", signal_function=qpicamera2.signal_done)
+    time.sleep(0.05)
+    overlay[:, :] = (0, 0, 0, 0)
+    qpicamera2.set_overlay(overlay)
+
+    config["General"] = {"total_captures": str(total_captures)}
+    with open(config_file_path, "w") as configfile:
+        config.write(configfile)
 
 
 def capture_done(job):
@@ -37,19 +58,17 @@ def capture_done(job):
 
 
 qpicamera2 = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
-# button = QPushButton("Click to capture JPEG")
+# print(dir(qpicamera2))
+# print(f'qpicamera2.size = {qpicamera2.size()}')
 circular_button = CircularButton("")
-# circular_button.setFixedSize(60, 60)
-# label = QLabel()
+
 window = QWidget()
 qpicamera2.done_signal.connect(capture_done)
 circular_button.clicked.connect(on_button_clicked)
 
-
 layout_h = QHBoxLayout()
 layout_h.addWidget(qpicamera2)
-# layout_v.addStretch(1)
-layout_h.addWidget(circular_button,)
+layout_h.addWidget(circular_button, )
 window.setWindowTitle("Qt Picamera2 App")
 window.resize(1200, 600)
 window.setLayout(layout_h)
