@@ -32,28 +32,39 @@ picam2.configure(picam2.create_preview_configuration(main={"size": (800, 600)}))
 # print(f'dir(picam2) = {dir(picam2)}')
 app = QApplication([])
 
+overlay_black = np.zeros((800, 600, 4), dtype=np.uint8)
+overlay_black[:, :] = (0, 0, 0, 255)
+
+overlay_origin = np.zeros((800, 600, 4), dtype=np.uint8)
+overlay_origin[:, :] = (0, 0, 0, 0)
+
+
 
 def on_button_clicked():
     global total_captures
     circular_button.setEnabled(False)
 
-    overlay = np.zeros((800, 600, 4), dtype=np.uint8)
-    overlay[:, :] = (0, 0, 0, 255)
-    qpicamera2.set_overlay(overlay)
-    cfg = picam2.create_still_configuration()
+
+    qpicamera2.set_overlay(overlay_black)
+    cfg = picam2.create_still_configuration(raw={})
     total_captures += 1
     picam2.switch_mode_and_capture_file(cfg, f"DSC_{total_captures:04d}.jpg", signal_function=qpicamera2.signal_done)
-    time.sleep(0.05)
-    overlay[:, :] = (0, 0, 0, 0)
-    qpicamera2.set_overlay(overlay)
+    picam2.switch_mode_and_capture_file(cfg, f"DSC_{total_captures:04d}.dng", name="raw",signal_function=qpicamera2.signal_done)
+    # time.sleep(0.05)
+    # overlay[:, :] = (0, 0, 0, 0)
+    # qpicamera2.set_overlay(overlay)
 
     config["General"] = {"total_captures": str(total_captures)}
     with open(config_file_path, "w") as configfile:
         config.write(configfile)
 
 
+
 def capture_done(job):
+
     picam2.wait(job)
+
+    qpicamera2.set_overlay(overlay_origin)
     circular_button.setEnabled(True)
 
 

@@ -9,14 +9,14 @@ class CircularButton(QPushButton):
         self.size=size
         self.setMinimumSize(size, size)
         self.setMaximumSize(size, size)
-        self.setStyleSheet(f"QPushButton {{ border-radius: {size/2}px; background-color: white; }}")
+        self.setStyleSheet(f"QPushButton {{ border-radius: {size/2}px; background-color: cyan; }}")
     def mousePressEvent(self, event):
         # Change the button appearance when pressed
-        self.setStyleSheet(f"QPushButton {{border-radius: {self.size/2}px;background-color: yellow; }}")
+        self.setStyleSheet(f"QPushButton {{border-radius: {self.size/2}px;background-color: white; }}")
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
 
         # Restore the original appearance when released
-        self.setStyleSheet(f"QPushButton {{border-radius: {self.size/2}px;background-color: white; }}")
+        self.setStyleSheet(f"QPushButton {{border-radius: {self.size/2}px;background-color: cyan; }}")
         super().mouseReleaseEvent(event)
