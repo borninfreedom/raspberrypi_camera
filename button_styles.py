@@ -2,10 +2,11 @@
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
                              QVBoxLayout, QWidget)
 
+button_size=50
 class CircularButton(QPushButton):
     def __init__(self, text, parent=None):
         super(CircularButton, self).__init__(text, parent)
-        size = 50  # Set the size of the button (adjust as needed)
+        size = button_size  # Set the size of the button (adjust as needed)
         self.size=size
         self.setMinimumSize(size, size)
         self.setMaximumSize(size, size)
