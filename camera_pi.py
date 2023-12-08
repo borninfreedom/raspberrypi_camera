@@ -50,20 +50,6 @@ os.makedirs(output_folder_path, exist_ok=True)
 # current_folder = 100
 
 
-# def increment_folder():
-#     global current_folder
-#     current_folder += 1
-#     config["General"]["current_folder"] = str(current_folder)
-#
-# def get_next_folder():
-#
-#     if total_captures > 9999:
-#         increment_folder()
-#         return os.path.join(os.path.expanduser(f"~/图片/{current_folder}_DCIM"))
-#     else:
-#         return output_folder
-
-
 
 # print(f'total_captures = {total_captures}')
 picam2 = Picamera2()
