@@ -133,14 +133,21 @@ qpicamera2 = QGlPicamera2(picam2, width=preview_width, height=preview_height, ke
 # print(dir(qpicamera2))
 # print(f'qpicamera2.size = {qpicamera2.size()}')
 circular_button = CircularButton("")
+circular_button_longexposure = CircularButton("")
 
 window = QWidget()
 qpicamera2.done_signal.connect(capture_done)
 circular_button.clicked.connect(on_button_clicked)
 
 layout_h = QHBoxLayout()
+layout_v=QVBoxLayout()
+layout_v.addWidget(circular_button)
+layout_v.addWidget(circular_button_longexposure)
 layout_h.addWidget(qpicamera2)
-layout_h.addWidget(circular_button)
+layout_h.addLayout(layout_v)
+
+
+
 window.setWindowTitle("Qt Picamera2 App")
 window.resize(preview_width+button_size, preview_height)
 window.setLayout(layout_h)
