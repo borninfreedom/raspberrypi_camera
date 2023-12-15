@@ -4,6 +4,7 @@
 # we use the Qt signal/slot mechanism to get a callback (capture_done)
 # when the capture, that is running asynchronously, is finished.
 from libcamera import controls
+import libcamera
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
                              QVBoxLayout, QWidget, QMessageBox)
@@ -130,6 +131,7 @@ def capture_done(job):
 
 
 qpicamera2 = QGlPicamera2(picam2, width=preview_width, height=preview_height, keep_ar=False)
+# qpicamera2["transform"] = libcamera.Transform(rotation=90)
 # print(dir(qpicamera2))
 # print(f'qpicamera2.size = {qpicamera2.size()}')
 circular_button = CircularButton("")
